@@ -1,12 +1,14 @@
 
-Repeat for retrieve.md, update.md, delete.md.  
-
 ---
 
-## ✅ Step 7: Push to GitHub  
-From the repo root (`C:\Users\hp\Desktop\Alx_DjangoLearnLab`):  
+### 📄 update.md
+```markdown
+# Update Book Title
 
-```bash
-git add .
-git commit -m "Implement bookshelf app with Book model and CRUD operations"
-git push origin main
+```python
+from bookshelf.models import Book
+book = Book.objects.get(title="1984")
+book.title = "Nineteen Eighty-Four"
+book.save()
+book.title
+# 'Nineteen Eighty-Four'
