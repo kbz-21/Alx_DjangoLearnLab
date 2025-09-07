@@ -11,8 +11,8 @@ def list_books(request):
 from django.views.generic.detail import DetailView
 from .models import Library
 
-# Class-based view to show library details and its books
+# Class-Based View (CBV) for showing library details
 class LibraryDetailView(DetailView):
     model = Library
-    template_name = 'library_detail.html'
+    template_name = 'relationship_app/library_detail.html'  # <--- corrected path
     context_object_name = 'library'
