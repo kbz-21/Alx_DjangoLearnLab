@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Add Book</title></head>
+<body>
+<h1>Add Book</h1>
+<form method="post">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="Title" required><br>
+    <input type="number" name="author_id" placeholder="Author ID" required><br>
+    <input type="number" name="year" placeholder="Publication Year"><br>
+    <button type="submit">Add</button>
+</form>
+</body>
+</html>
