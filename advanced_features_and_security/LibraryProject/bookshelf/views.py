@@ -21,3 +21,15 @@ def book_edit(request, pk):
 def book_delete(request, pk):
     book = get_object_or_404(Book, pk=pk)
     return HttpResponse(f"Delete {book.title} (only Admins)")
+
+
+
+
+# ......................................
+from django.db.models import Q
+from .models import Book
+
+def search_books(request):
+    query = request.GET.get("q", "")
+    books = Book.objects.filter(Q(title__icontains=query))
+    return render(request, "bookshelf/book_list.html", {"books": books})
