@@ -33,3 +33,25 @@ def search_books(request):
     query = request.GET.get("q", "")
     books = Book.objects.filter(Q(title__icontains=query))
     return render(request, "bookshelf/book_list.html", {"books": books})
+
+
+
+# ................................
+
+from django.shortcuts import render
+from .forms import ExampleForm  # ✅ import the form
+
+def example_form_view(request):
+    if request.method == "POST":
+        form = ExampleForm(request.POST)
+        if form.is_valid():
+            # Normally handle the data (e.g., save or process)
+            return render(request, "bookshelf/form_example.html", {
+                "form": form,
+                "success": True
+            })
+    else:
+        form = ExampleForm()
+
+    return render(request, "bookshelf/form_example.html", {"form": form})
+

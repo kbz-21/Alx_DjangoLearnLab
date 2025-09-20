@@ -3,3 +3,24 @@
     {{ form.as_p }}
     <button type="submit">Submit</button>
 </form>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Example Form</title>
+</head>
+<body>
+    <h1>Submit Example Form</h1>
+    {% if success %}
+        <p style="color: green;">Form submitted successfully!</p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
