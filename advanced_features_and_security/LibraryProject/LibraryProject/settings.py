@@ -152,3 +152,35 @@ SECURE_HSTS_PRELOAD = True
 
 # ✅ Allowed hosts (replace with your actual domain when deploying)
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+
+
+# ........................................
+
+# Enforce HTTPS redirect
+SECURE_SSL_REDIRECT = True  
+
+# HTTP Strict Transport Security (HSTS) - tells browsers to always use HTTPS
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+
+
+# ...................................................
+# Secure cookies
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+
+
+# .................................
+
+# Prevent clickjacking
+X_FRAME_OPTIONS = "DENY"
+
+# Prevent browsers from MIME-sniffing
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Enable XSS protection in browsers
+SECURE_BROWSER_XSS_FILTER = True

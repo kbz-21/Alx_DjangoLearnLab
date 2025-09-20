@@ -36,3 +36,20 @@ Views are protected with `@permission_required`. Example:
 def book_edit(request, pk):
     ...
 
+
+
+# .............................................
+## HTTPS and Security Settings
+
+- `SECURE_SSL_REDIRECT = True`: Redirects all HTTP requests to HTTPS.
+- `SECURE_HSTS_SECONDS = 31536000`: Enforces HTTPS for one year.
+- `SECURE_HSTS_INCLUDE_SUBDOMAINS = True`: Applies HSTS to all subdomains.
+- `SECURE_HSTS_PRELOAD = True`: Allows site to be included in browser preload lists.
+- `SESSION_COOKIE_SECURE = True`: Ensures session cookies are sent only via HTTPS.
+- `CSRF_COOKIE_SECURE = True`: Ensures CSRF cookies are sent only via HTTPS.
+- `X_FRAME_OPTIONS = "DENY"`: Protects against clickjacking.
+- `SECURE_CONTENT_TYPE_NOSNIFF = True`: Prevents MIME sniffing.
+- `SECURE_BROWSER_XSS_FILTER = True`: Enables browser XSS filter.
+
+### Deployment
+Configured Nginx with SSL (Let’s Encrypt) to serve the application securely.
