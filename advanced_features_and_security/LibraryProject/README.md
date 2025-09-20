@@ -10,3 +10,29 @@ This is the first Django project created for the **ALX Introduction to Django ta
 
 ## Project Structure
 
+
+
+<!-- ...................................
+ -->
+
+ # Permissions and Groups Setup
+
+## Custom Permissions
+Defined in `bookshelf/models.py`:
+- can_view
+- can_create
+- can_edit
+- can_delete
+
+## Groups
+- **Viewers**: can_view
+- **Editors**: can_view, can_create, can_edit
+- **Admins**: all permissions
+
+## Usage in Views
+Views are protected with `@permission_required`. Example:
+```python
+@permission_required('bookshelf.can_edit', raise_exception=True)
+def book_edit(request, pk):
+    ...
+
