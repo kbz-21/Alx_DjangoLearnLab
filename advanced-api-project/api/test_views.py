@@ -27,7 +27,7 @@ class BookAPITestCase(APITestCase):
         self.delete_url = reverse("book-delete", args=[self.book.id])  # /books/delete/<id>/
 
     def authenticate(self):
-        """Helper method to authenticate a user before requests."""
+        """Helper method to authenticate a user with DRF Token."""
         self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
 
     # ------------------------
@@ -43,12 +43,22 @@ class BookAPITestCase(APITestCase):
         response = self.client.post(self.create_url, data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_create_book_authenticated(self):
+    def test_create_book_authenticated_with_token(self):
+        """Test using Token authentication"""
         self.authenticate()
         data = {"title": "New Book", "author": "Jane Doe", "publication_year": 2022}
         response = self.client.post(self.create_url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Book.objects.count(), 2)
+
+    def test_create_book_authenticated_with_login(self):
+        """Test using Django's default login session"""
+        login = self.client.login(username="testuser", password="testpass123")
+        self.assertTrue(login)  # Ensure login was successful
+        data = {"title": "Another Book", "author": "Jane Doe", "publication_year": 2023}
+        response = self.client.post(self.create_url, data)
+        self.assertIn(response.status_code, [status.HTTP_201_CREATED, status.HTTP_302_FOUND])
+        # Some APIs may redirect after login, so we allow both
 
     def test_update_book_authenticated(self):
         self.authenticate()

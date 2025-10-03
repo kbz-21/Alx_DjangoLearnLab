@@ -22,7 +22,7 @@ class BookDetailView(generics.RetrieveAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
-
+    
 
 # Create requires login
 class BookCreateView(generics.CreateAPIView):
