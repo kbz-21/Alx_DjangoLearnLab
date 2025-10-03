@@ -4,24 +4,17 @@ from .models import Book
 from .serializers import BookSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework   # ✅ ALX checker requirement
+from rest_framework import generics, filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 # List and Detail views are open to everyone (read-only allowed)
 
 class BookListView(generics.ListAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-
-    # Enable filtering, searching, ordering
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-
-    # ✅ Filtering: by these fields
-    filterset_fields = ['title', 'author__name', 'publication_year']
-
-    # ✅ Searching: keyword search
-    search_fields = ['title', 'author__name']
-
-    # ✅ Ordering: allow sorting
+    filterset_fields = ['title', 'author', 'publication_year']
+    search_fields = ['title', 'author']
     ordering_fields = ['title', 'publication_year']
     ordering = ['title']  # default ordering
 
