@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ post.title }}</h1>
+  <p><small>By {{ post.author.username }} • {{ post.published_date }}</small></p>
+  <div>{{ post.content|linebreaks }}</div>
+
+  {% if request.user == post.author %}
+    <p>
+      <a href="{% url 'post_edit' post.pk %}">Edit</a> |
+      <a href="{% url 'post_delete' post.pk %}">Delete</a>
+    </p>
+  {% endif %}
+  <p><a href="{% url 'posts_list' %}">Back to posts</a></p>
+{% endblock %}
