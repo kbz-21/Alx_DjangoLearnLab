@@ -7,7 +7,14 @@
 <body>
     <header>
         <h1>Welcome to My Blog</h1>
+
+        <!-- 🔍 Search Form placed here -->
+        <form method="get" action="{% url 'post-search' %}">
+            <input type="text" name="q" placeholder="Search posts..." required>
+            <button type="submit">Search</button>
+        </form>
     </header>
+
     <main>
         {% block content %}{% endblock %}
     </main>

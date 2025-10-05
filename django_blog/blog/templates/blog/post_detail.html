@@ -1,9 +1,20 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block content %}
   <h1>{{ post.title }}</h1>
   <p><small>By {{ post.author.username }} • {{ post.published_date }}</small></p>
   <div>{{ post.content|linebreaks }}</div>
+
+  <!-- ✅ Tags section placed right below the post content -->
+  <p>
+      <strong>Tags:</strong>
+      {% for tag in post.tags.all %}
+          <a href="{% url 'posts-by-tag' tag.slug %}">{{ tag.name }}</a>{% if not forloop.last %}, {% endif %}
+      {% empty %}
+          No tags
+      {% endfor %}
+  </p>
 
   <hr>
   <h3>Comments ({{ comments.count }})</h3>
