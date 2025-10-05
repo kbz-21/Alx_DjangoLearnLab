@@ -20,6 +20,9 @@ from django.db.models import Q
 from django.views.generic import ListView
 from .models import Post
 
+from .models import Post, Tag  # if you have a Tag model
+
+
 # Registration View
 def register_view(request):
     if request.method == "POST":
@@ -200,3 +203,19 @@ class PostSearchView(ListView):
                 Q(tags__name__icontains=query)
             ).distinct()
         return Post.objects.all()
+
+
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = "posts_by_tag.html"  # create this template
+    context_object_name = "posts"
+
+    def get_queryset(self):
+        tag_name = self.kwargs.get("tag_name")
+        return Post.objects.filter(tags__name__iexact=tag_name)  # assuming a many-to-many field 'tags'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["tag_name"] = self.kwargs.get("tag_name")
+        return context
