@@ -1,14 +1,41 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
   <h1>{{ post.title }}</h1>
   <p><small>By {{ post.author.username }} • {{ post.published_date }}</small></p>
   <div>{{ post.content|linebreaks }}</div>
 
-  {% if request.user == post.author %}
-    <p>
-      <a href="{% url 'post_edit' post.pk %}">Edit</a> |
-      <a href="{% url 'post_delete' post.pk %}">Delete</a>
-    </p>
+  <hr>
+  <h3>Comments ({{ comments.count }})</h3>
+
+  <div id="comments">
+    {% for comment in comments %}
+      <div class="comment" id="comment-{{ comment.pk }}">
+        <p><strong>{{ comment.author.username }}</strong> <small>{{ comment.created_at }}</small></p>
+        <div>{{ comment.content|linebreaks }}</div>
+        {% if request.user == comment.author %}
+          <p>
+            <a href="{% url 'comment_edit' comment.pk %}">Edit</a> |
+            <a href="{% url 'comment_delete' comment.pk %}">Delete</a>
+          </p>
+        {% endif %}
+        <hr>
+      </div>
+    {% empty %}
+      <p>No comments yet. Be the first to comment!</p>
+    {% endfor %}
+  </div>
+
+  {% if request.user.is_authenticated %}
+    <h4>Add a comment</h4>
+    <form action="{% url 'comment_create' post.pk %}" method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit">Post Comment</button>
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}">Log in</a> to post a comment.</p>
   {% endif %}
+
   <p><a href="{% url 'posts_list' %}">Back to posts</a></p>
 {% endblock %}
