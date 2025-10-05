@@ -14,6 +14,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Post, Comment
 from .forms import PostForm, CommentForm
 
+from django.views.generic import CreateView, UpdateView, DeleteView
+
 # Registration View
 def register_view(request):
     if request.method == "POST":
@@ -161,4 +163,19 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, generic.DeleteV
 
     def test_func(self):
         comment = self.get_object()
-        return comment.author == self.request.user
+        return comment.author == self.request.
+    
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        post = get_object_or_404(Post, id=self.kwargs['pk'])
+        form.instance.post = post
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.object.post.get_absolute_url()

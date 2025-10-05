@@ -10,6 +10,7 @@ from .views import (
     CommentDeleteView,
 )
 from . import views
+from .views import CommentCreateView
 
 urlpatterns = [
     path("register/", views.register_view, name="register"),
@@ -24,6 +25,7 @@ urlpatterns = [
 
      # Comment URLs
     path("posts/<int:post_id>/comments/new/", add_comment, name="comment_create"),
+    path('post/<int:pk>/comment/new/', CommentCreateView.as_view(), name='comment-create'),
     path("comments/<int:pk>/edit/", CommentUpdateView.as_view(), name="comment_edit"),
     path("comments/<int:pk>/delete/", CommentDeleteView.as_view(), name="comment_delete"),
 ]
