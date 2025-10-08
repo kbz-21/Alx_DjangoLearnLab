@@ -25,3 +25,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         Token.objects.create(user=user) 
         return user
+
+
+# accounts/serializers.py
+from rest_framework import serializers
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class UserSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'profile_picture', 'bio']
+
+class FollowSerializer(serializers.Serializer):
+    """Serializer for follow/unfollow actions. Accepts target user id."""
+    user_id = serializers.IntegerField()

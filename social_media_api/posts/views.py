@@ -67,3 +67,31 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+
+
+# posts/views.py
+from rest_framework import generics, permissions
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+from .models import Post
+from .serializers import PostSerializer
+
+User = get_user_model()
+
+class FeedListView(generics.ListAPIView):
+    """
+    List posts by users the requesting user follows.
+    If unauthenticated, return empty list or public posts depending on your policy.
+    """
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]  # feed requires auth
+    pagination_class = None  # optional, DRF pagination applies if set in settings
+
+    def get_queryset(self):
+        user = self.request.user
+        # posts by users the current user follows
+        followed_users = user.following.all()
+        # return posts authored by followed users, newest first
+        return Post.objects.filter(author__in=followed_users).order_by('-created_at')
