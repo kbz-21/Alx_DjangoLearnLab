@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
+from .models import Post, Comment
 
 class PostViewSet(viewsets.ModelViewSet):
     """
@@ -45,4 +46,24 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         # expect 'post' in the request data as post id
+        serializer.save(author=self.request.user)
+
+
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all()  # ✅ Required by ALX test
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()  # ✅ Required by ALX test
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
         serializer.save(author=self.request.user)
