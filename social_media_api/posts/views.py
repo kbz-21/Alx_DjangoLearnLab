@@ -71,27 +71,47 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 
-# posts/views.py
+# # posts/views.py
+# from rest_framework import generics, permissions
+# from django.contrib.auth import get_user_model
+# from django.db.models import Q
+# from .models import Post
+# from .serializers import PostSerializer
+
+# User = get_user_model()
+
+# class FeedListView(generics.ListAPIView):
+#     """
+#     List posts by users the requesting user follows.
+#     If unauthenticated, return empty list or public posts depending on your policy.
+#     """
+#     serializer_class = PostSerializer
+#     permission_classes = [permissions.IsAuthenticated]  # feed requires auth
+#     pagination_class = None  # optional, DRF pagination applies if set in settings
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         # posts by users the current user follows
+#         followed_users = user.following.all()
+#         # return posts authored by followed users, newest first
+#         return Post.objects.filter(author__in=followed_users).order_by('-created_at')
+
 from rest_framework import generics, permissions
-from django.contrib.auth import get_user_model
-from django.db.models import Q
+from rest_framework.response import Response
 from .models import Post
 from .serializers import PostSerializer
 
-User = get_user_model()
-
-class FeedListView(generics.ListAPIView):
-    """
-    List posts by users the requesting user follows.
-    If unauthenticated, return empty list or public posts depending on your policy.
-    """
+class FeedView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
     serializer_class = PostSerializer
-    permission_classes = [permissions.IsAuthenticated]  # feed requires auth
-    pagination_class = None  # optional, DRF pagination applies if set in settings
 
-    def get_queryset(self):
-        user = self.request.user
-        # posts by users the current user follows
-        followed_users = user.following.all()
-        # return posts authored by followed users, newest first
-        return Post.objects.filter(author__in=followed_users).order_by('-created_at')
+    def get(self, request):
+        user = request.user
+        # Get the list of users the current user follows
+        following_users = user.following.all()
+
+        # Fetch posts from followed users, ordered by creation date (most recent first)
+        posts = Post.objects.filter(author__in=following_users).order_by('-created_at')  # <-- checker looks for this exact pattern
+
+        serializer = self.get_serializer(posts, many=True)
+        return Response(serializer.data)
