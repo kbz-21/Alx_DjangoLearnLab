@@ -9,11 +9,15 @@ from .views import PostLikeView, PostUnlikeView
 router = DefaultRouter()
 router.register(r'posts', PostViewSet, basename='post')
 router.register(r'comments', CommentViewSet, basename='comment')
+from .views import LikePostView, UnlikePostView
+
 
 urlpatterns = [
     path('', include(router.urls)),
     path('feed/', FeedListView.as_view(), name='user-feed'),
     path('posts/<int:pk>/like/', PostLikeView.as_view(), name='post-like'),
     path('posts/<int:pk>/unlike/', PostUnlikeView.as_view(), name='post-unlike'),
+    path('<int:pk>/like/', LikePostView.as_view(), name='like-post'),
+    path('<int:pk>/unlike/', UnlikePostView.as_view(), name='unlike-post'),
     
 ]
