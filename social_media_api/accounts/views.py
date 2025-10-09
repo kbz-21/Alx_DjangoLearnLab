@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer, UserSerializer
+from notifications.utils import create_notification
 
 from django.shortcuts import get_object_or_404
 from .models import CustomUser  # <-

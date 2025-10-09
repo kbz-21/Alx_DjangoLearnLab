@@ -71,30 +71,30 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 
-# # posts/views.py
-# from rest_framework import generics, permissions
-# from django.contrib.auth import get_user_model
-# from django.db.models import Q
-# from .models import Post
-# from .serializers import PostSerializer
+# posts/views.py
+from rest_framework import generics, permissions
+from django.contrib.auth import get_user_model
+from django.db.models import Q
+from .models import Post
+from .serializers import PostSerializer
 
-# User = get_user_model()
+User = get_user_model()
 
-# class FeedListView(generics.ListAPIView):
-#     """
-#     List posts by users the requesting user follows.
-#     If unauthenticated, return empty list or public posts depending on your policy.
-#     """
-#     serializer_class = PostSerializer
-#     permission_classes = [permissions.IsAuthenticated]  # feed requires auth
-#     pagination_class = None  # optional, DRF pagination applies if set in settings
+class FeedListView(generics.ListAPIView):
+    """
+    List posts by users the requesting user follows.
+    If unauthenticated, return empty list or public posts depending on your policy.
+    """
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticated]  # feed requires auth
+    pagination_class = None  # optional, DRF pagination applies if set in settings
 
-#     def get_queryset(self):
-#         user = self.request.user
-#         # posts by users the current user follows
-#         followed_users = user.following.all()
-#         # return posts authored by followed users, newest first
-#         return Post.objects.filter(author__in=followed_users).order_by('-created_at')
+    def get_queryset(self):
+        user = self.request.user
+        # posts by users the current user follows
+        followed_users = user.following.all()
+        # return posts authored by followed users, newest first
+        return Post.objects.filter(author__in=followed_users).order_by('-created_at')
 
 from rest_framework import generics, permissions
 from rest_framework.response import Response
@@ -115,3 +115,46 @@ class FeedView(generics.GenericAPIView):
 
         serializer = self.get_serializer(posts, many=True)
         return Response(serializer.data)
+
+
+
+from rest_framework import status, permissions, generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
+
+from .models import Post, Like
+from .serializers import PostSerializer
+from notifications.utils import create_notification  # we'll create this util
+
+class PostLikeView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        # prevent liking your own post? (optional)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        if not created:
+            return Response({"detail": "Already liked"}, status=status.HTTP_400_BAD_REQUEST)
+        # create notification for post author (unless actor is the author)
+        if post.author != request.user:
+            create_notification(recipient=post.author, actor=request.user, verb="liked", target=post)
+        serializer = PostSerializer(post, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class PostUnlikeView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = PostSerializer
+    queryset = Post.objects.all()
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        deleted, _ = Like.objects.filter(user=request.user, post=post).delete()
+        if deleted == 0:
+            return Response({"detail": "Not liked yet"}, status=status.HTTP_400_BAD_REQUEST)
+        # Optionally remove the specific notification or mark it
+        # For simplicity, leave historical notifications
+        serializer = PostSerializer(post, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)

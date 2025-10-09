@@ -10,4 +10,6 @@ urlpatterns = [
 
     path('api/', include('posts.urls')),       # your posts & comments endpoints under /api/
     path('api/auth/', include('rest_framework.urls')),  # optional browsable login
+    path('api/notifications/', include('notifications.urls')),
+
 ]
